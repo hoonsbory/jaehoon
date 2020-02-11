@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+<style type="text/css">
+form{
+	display : inline !important;
+}
+
+</style>
+</head>
+<body>
+	<table width="700" border="1" bordercolor="lightgray" align="center">
+		<tr>
+			<td id="title">작성자</td>
+			<td>세션로그인정보</td>
+		</tr>
+		<tr>
+			<td id="title">제 목</td>
+			<td th:text="${board.board_title}"></td>
+		</tr>
+		<tr>
+		<tr>
+			<td id="title">조회수</td>
+			<td th:text="${board.board_cnt}"></td>
+		</tr>
+		<tr>
+			<td id="title">등록일</td>
+			<td th:text="${board.board_date}"></td>
+		</tr>
+		<tr>
+
+			<td colspan="2">[[${board.board_content}]]
+				<div th:each="imgList : ${img}" id="contentDiv">
+					<img th:if="${imgList}!=null" th:src="@{/../}+${imgList}"
+						style="width: 700px; height: 300px; display: block">
+				</div>
+			</td>
+		</tr>
+
+		<tr align="center" valign="middle">
+			<td colspan="5"><a class="btn btn-primary btn-xs"
+				th:href="@{/../boardList/}+${pagenum}">목록</a>
+
+
+				<form id="frm3" action="/boardUpdate" method="post">
+					<input type="hidden" name="board_num" th:value="${board.board_num}">
+					<input type="hidden" name="pagenum" th:value="${pagenum}">
+				</form> <a class="btn btn-primary btn-xs"
+				onclick="document.getElementById('frm3').submit();">수정</a>
+
+
+
+				<form id="frm4" action="/../deleteBoard33" method="post">
+					<input type="hidden" name="board_num" th:value="${board.board_num}">
+					<input type="hidden" name="pagenum" th:value="${pagenum}">
+				</form> <a class="btn btn-primary btn-xs" onclick="button_event();">삭제</a>
+
+
+				<form id="frm2" action="/boardForm2" method="post">
+					<input type="hidden" name="board_num" th:value="${board.board_num}">
+					<input type="hidden" name="pagenum" th:value="${pagenum}">
+				</form> <a class="btn btn-primary btn-xs"
+				onclick="document.getElementById('frm2').submit();">답글달기</a>
+
+
+				<form id="frm5" action="/boardUp" method="post">
+					<input type="hidden" name="board_num" th:value="${board.board_num}">
+					<input type="hidden" name="pagenum" th:value="${pagenum}">
+
+				</form> <a th:if="${first}==null" class="btn btn-primary btn-xs"
+				onclick="document.getElementById('frm5').submit();">윗글</a>
+
+				<form id="frm6" action="/boardDown" method="post">
+					<input type="hidden" name="board_num" th:value="${board.board_num}">
+					<input type="hidden" name="pagenum" th:value="${pagenum}">
+				</form> <a th:if="${last}==null" class="btn btn-primary btn-xs"
+				onclick="document.getElementById('frm6').submit();">아랫글</a>
+				
+				</td>
+		</tr>
+	</table>
+
+	<script type="text/javascript">
+		function button_event() {
+			if (confirm("정말 삭제하시겠습니까??") == true) { //확인
+				document.getElementById('frm4').submit();
+			} else { //취소
+				return;
+			}
+		}
+	</script>
+
+</body>
+</html>

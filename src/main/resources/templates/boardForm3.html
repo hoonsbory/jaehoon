@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+<style type="text/css">
+        .imgs_wrap {
+            width: 600px;
+            margin-top: 50px;
+        }
+        .imgs_wrap img {
+            max-width: 200px;
+        }
+ 
+    </style>
+</head>
+<body>
+	<form th:object="${Board3}" method="post" th:action="@{insertboard}"
+		enctype="multipart/form-data">
+		<input type="hidden" name="board_userid" value="tony">
+		<table width="700" border="3" bordercolor="lightgray" align="center">
+			<tr>
+				<td id="title">작성자</td>
+				<td>세션로그인정보</td>
+			</tr>
+			<tr>
+				<td id="title">제 목</td>
+				<td><input name="board_title" required="required" type="text" size="70"
+					maxlength="100" value="" /></td>
+			</tr>
+			<tr>
+				<td id="title">내 용</td>
+				<td >
+				<textarea name="board_content" required="required" cols="72" rows="20"></textarea> 
+				<div class="imgs_wrap"><img id="img"/></div>
+				</td>
+				
+			</tr>
+			<tr>
+				<td id="title">파일첨부</td>
+				<td>
+				<a href="javascript:" onclick="fileUploadAction();" class="my_button">파일 업로드</a>
+				<input class="btn btn-primary btn-xs" type="file" id="input_imgs"
+					accept=".jpg,.png,.gif,.jpeg" name="img" multiple="multiple" /></td>
+			</tr>
+
+			<tr align="center" valign="middle">
+				<td colspan="5"><input class="btn btn-primary btn-xs" type="submit" value="등록"> 
+				<a class="btn btn-primary btn-xs" th:href="@{/../boardList/}+${pagenum}">작성취소</a></td>
+			</tr>
+		</table>
+
+
+
+	</form>
+
+
+<script type="text/javascript">
+var sel_files = [];
+
+
+$(document).ready(function() {
+    $("#input_imgs").on("change", handleImgFileSelect);
+
+
+}); 
+function handleImgFileSelect(e) {
+
+    // 이미지 정보들을 초기화
+    sel_files = [];
+    $(".imgs_wrap").empty();
+
+    var files = e.target.files;
+    var filesArr = Array.prototype.slice.call(files);
+
+    var index = 0;
+    filesArr.forEach(function(f) {
+        if(!f.type.match("image.*")) {
+            alert("확장자는 이미지 확장자만 가능합니다.");
+            return;
+        }
+
+        sel_files.push(f);
+        
+     
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+        	var html = "<a href=\"javascript:void(0);\" onclick=\"deleteImageAction("+index+")\" id=\"img_id_"+index+"\"><img src=\"" + e.target.result + "\" data-file='"+f.name+"' class='selProductFile' title='Click to remove'></a>";
+            $(".imgs_wrap").append(html);
+            index++;
+
+        }
+        reader.readAsDataURL(f);
+        
+    });
+}
+function fileUploadAction() {
+    console.log("fileUploadAction");
+    $("#input_imgs").trigger('click');
+}
+function deleteImageAction(index) {            
+    console.log("index : "+index);
+    sel_files.splice(index, 1);
+
+    var img_id = "#img_id_"+index;
+    $(img_id).remove();
+
+    console.log(sel_files);
+}   
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.example.demo.dao.BoardMapper1">
+
+<!-- 재훈 -->
+
+<insert id="addBoard3" parameterType="Board3">
+		insert into board
+		(BOARD_NUM, BOARD_userid, BOARD_TITLE,
+		BOARD_CONTENT,
+		BOARD_IMG,board_parent
+		)
+		values(${board_num},
+		'${board_userid}',
+		'${board_title}',
+		'${board_content}',
+		'${board_img}',
+		${board_parent}
+
+		)
+	</insert>
+
+	
+	
+
+
+	<update id="countUp3" parameterType="int">
+		update board set board_cnt = (select nvl(max(board_cnt), 0)+1 from board 
+		where  board_num = ${board_num}) where board_num = ${board_num}
+	</update>
+	
+	<update id="updateBoard33" parameterType="Board3" >
+		update board set board_title = '${board_title}', 
+		board_content = '${board_content}' , 
+		board_img = '${board_img}' where board_num = ${board_num}
+	</update>
+	
+	<select id="getSeq3" resultType="int">
+		select nvl(max(board_num), 0)
+		from board
+	</select>
+
+	<select id="boardList3" resultType="Board3">
+	
+		SELECT LPAD(' re:',
+		4*(LEVEL-1)) || board_title board_title,
+
+		board_num,
+		board_userid,
+		board_cnt,
+		board_date
+
+		FROM board
+
+		START WITH board_parent = 0
+
+		CONNECT BY PRIOR board_num = board_parent
+ 		ORDER SIBLINGS BY board_date desc
+	</select>
+
+	<select id="boardView3" parameterType="int" resultType="Board3">
+		select * from board where board_num = ${board_num}
+	
+	</select>
+	
+	<delete id="deleteBoard3" parameterType="int">
+		delete board where board_num = ${board_num}
+	</delete>
+</mapper>

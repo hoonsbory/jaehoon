@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<style type="text/css">
+
+
+
+
+pre {
+	float: left;
+	text-align: left;
+}
+
+div {
+	width: 100%;
+	text-align: center;
+}
+
+a {
+	padding-left: 7px;
+	padding-right: 7px;
+	padding-bottom: 1px;
+	padding-top: 3px;
+	text-decoration: none;
+}
+.pageList:hover{
+	color: #db4d0f;
+	border: solid 1px orange;
+	text-decoration: none;
+}
+.lastPage:hover{
+	color: #db4d0f;
+	border: solid 1px orange;
+	text-decoration: none;
+}
+.firstPage:hover{
+	color: #db4d0f;
+	border: solid 1px orange;
+	text-decoration: none;
+}
+.title {
+	background-color: transparent !important;
+	background-image: none !important;
+	border-color: transparent;
+	border: none;
+	color: black;
+}
+
+.titleText:hover {
+	text-decoration: underline;
+	
+}
+
+</style>
+</head>
+<body>
+
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<td>글번호</td>
+				<td>제목</td>
+				<td>작성자</td>
+				<td>날짜</td>
+				<td>조회수</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:if="${empty}!=null">
+			<td style="text-align : center" colspan="5">게시글이 없습니다 등록해주세요.</td>
+			</tr>
+			<tr th:each="board : ${boardList}">
+				
+				<td th:text="${board.board_num}"></td>
+				<td>
+					<a th:href="@{/boardView/}+${board.board_num}" th:utext="${board.board_title}"></a>
+					<!-- <form id="frm_1" th:action="@{/boardView/}+${board.board_num}" method=get>
+						<input type="hidden" name="pagenum" th:value="${pagenum}">
+						<button class="title">
+							<p class="titleText" th:utext="${board.board_title}"></p>
+						</button>
+					</form> -->
+
+
+					<form id="frm2" action="/boardForm2" method="post">
+						<input type="hidden" name="board_num"
+							th:value="${board.board_num}">
+							 <input type="hidden" name="pagenum" th:value="${pagenum}">
+						<button class="btn btn-primary btn-xs" style="display : none">답글달기</button>
+					</form>
+
+				</td>
+				<td th:text="${board.board_userid}"></td>
+				<td th:text="${board.board_date}"></td>
+				<td th:text="${board.board_cnt}"></td>
+
+			</tr>
+		</tbody>
+	</table>
+	<form id="frm3" action="/boardForm" method="post">
+		<input type="hidden" name="pagenum" th:value="${pagenum}">
+	</form>
+	<a class="btn btn-primary btn-xs" onclick="document.getElementById('frm3').submit();">글쓰기</a>
+	
+	<a class="btn btn-primary btn-xs" href="/../main">메인화면</a>
+
+	<div id="pageCenter"></div>
+	<br>
+	<br>
+	
+	<div style="float : right" class="w3-display-bottomleft w3-padding-large">
+			Powered by <a href="https://bitcamp.co.kr/index.php?main_page=home"
+				target="_blank">BIT CAMP-신재훈</a>
+		</div>
+
+
+
+
+</body>
+<script th:inline="javascript">
+	/*<![CDATA[*/ 
+var pageSize = /*[[${listSize}]]*/;
+	/*]]>*/	
+var pagenum = /*[[${pagenum}]]*/;
+console.log(pageSize);
+var pageJump;
+if(pagenum-10<=0){
+	pageJump = 1;
+}else{
+	pageJump = pagenum -10;
+}
+
+var pageJump2;
+if(pagenum+10>pageSize){
+	pageJump2 = pageSize;
+}else{
+	pageJump2 = pagenum +10;
+}
+
+
+if(pagenum < 6){
+	let left = document.createElement('span');
+	left.setAttribute("class" , "left");
+	
+	let leftArrow = document.createElement('span');
+	leftArrow.setAttribute("class" , "leftArrow");
+	let num_prev = document.createElement('span');
+	num_prev.setAttribute("class" , "num_prev_left");
+	
+	document.querySelector('#pageCenter').appendChild(left);
+	document.querySelector('.left').appendChild(leftArrow);
+	document.querySelector('.left').appendChild(num_prev);
+	$('.leftArrow').html("◀");
+	$('.num_prev_left').text("이전");
+	
+}else{
+	let left = document.createElement('span');
+	left.setAttribute("class" , "left");
+	
+	let leftArrow = document.createElement('span');
+	leftArrow.setAttribute("class" , "leftArrow");
+	let num_prev = document.createElement('a');
+	num_prev.setAttribute("class" , "num_prev_left");
+	num_prev.setAttribute("href" , "../boardList/"+pageJump);
+	
+	document.querySelector('#pageCenter').appendChild(left);
+	document.querySelector('.left').appendChild(leftArrow);
+	document.querySelector('.left').appendChild(num_prev);
+	
+	$('.leftArrow').html("◀");
+	$('.num_prev_left').html("이전");
+	
+}
+
+
+if(pagenum >5){
+	let firstPage = document.createElement('a');
+	firstPage.setAttribute("class" , "firstPage");
+	firstPage.setAttribute("href" , "../boardList/"+1);
+	
+	document.querySelector('#pageCenter').appendChild(firstPage);
+	$('.firstPage').html("1");
+	let dot = document.createElement('span');
+	dot.setAttribute("id" , "leftDot");
+	document.querySelector('#pageCenter').appendChild(dot);
+	$('#leftDot').html("...");
+}
+
+	for(var i = pagenum-4; i<=pagenum+4; i++){
+		if(i<=0){
+			continue;
+		}
+		
+		let pageList = document.createElement('a');
+		pageList.setAttribute("class" , "pageList");
+		pageList.setAttribute("id" , "pageList"+i);
+		pageList.setAttribute("href" , "../boardList/"+i);
+		
+		document.querySelector('#pageCenter').appendChild(pageList);
+		$('#pageList'+i).html(i);
+		if(i==pageSize){
+			
+			break;
+		}
+		
+		
+	}  
+
+if(pagenum>5){
+	$('#pageList1').remove();
+}	
+
+if(pagenum < pageSize-5){
+	let dot = document.createElement('span');
+	dot.setAttribute("id" , "rightDot");
+	document.querySelector('#pageCenter').appendChild(dot);
+	$('#rightDot').html("...");
+}
+
+if(pagenum < pageSize){
+	let lastPage = document.createElement('a');
+	lastPage.setAttribute("class" , "lastPage");
+	lastPage.setAttribute("href" , "../boardList/"+pageSize);
+	
+	
+	document.querySelector('#pageCenter').appendChild(lastPage);
+	$('.lastPage').html(pageSize);
+	$('#pageList'+pageSize).remove();
+	
+}
+
+
+
+if(pagenum > pageSize-5){
+	let right = document.createElement('span');
+	right.setAttribute("class" , "right");
+	
+	let rightArrow = document.createElement('span');
+	rightArrow.setAttribute("class" , "rightArrow");
+	let num_prev = document.createElement('span');
+	num_prev.setAttribute("class" , "num_prev_right");
+	
+	document.querySelector('#pageCenter').appendChild(right);
+	document.querySelector('.right').appendChild(num_prev);
+	document.querySelector('.right').appendChild(rightArrow);
+	$('.rightArrow').html("▶");
+	$('.num_prev_right').text("다음");
+	
+}else{
+	let right = document.createElement('span');
+	right.setAttribute("class" , "right");
+	
+	let rightArrow = document.createElement('span');
+	rightArrow.setAttribute("class" , "rightArrow");
+	let num_prev = document.createElement('a');
+	num_prev.setAttribute("href" , "../boardList/"+pageJump2);
+	num_prev.setAttribute("class" , "num_prev_right");
+	
+	document.querySelector('#pageCenter').appendChild(right);
+	document.querySelector('.right').appendChild(num_prev);
+	document.querySelector('.right').appendChild(rightArrow);
+	$('.rightArrow').html("▶");
+	$('.num_prev_right').text("다음");
+	
+}
+
+$('#pageList'+pagenum).css("color","#db4d0f");
+
+
+
+</script>
+</html>
